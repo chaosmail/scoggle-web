@@ -1,0 +1,265 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html ng-app="scoggle">
+<head>
+  <title>Scoggle | the home of data scores</title>
+
+  <link rel="stylesheet" href="{% static "bootstrap/dist/css/bootstrap.css" %}">
+
+  <link rel="stylesheet" href="{% static "highlightjs/styles/github.css" %}">
+  <script src="{% static "highlightjs/highlight.pack.js" %}"></script>
+  
+  <script src="{% static "jquery/dist/jquery.js" %}"></script>
+  <script src="{% static "bootstrap/dist/js/bootstrap.js" %}"></script>
+
+  <script src="{% static "d3/d3.min.js" %}"></script>
+
+  <script src="{% static "angular/angular.js" %}"></script>
+  <script src="{% static "angular-resource/angular-resource.js" %}"></script>
+  <script src="{% static "angular-sanitize/angular-sanitize.js" %}"></script>
+  <script src="{% static "showdown/compressed/Showdown.js" %}"></script>
+  <script src="{% static "angular-markdown-directive/markdown.js" %}"></script>       
+  <script src="{% static "angular-highlightjs/angular-highlightjs.js" %}"></script>
+  <script src="{% static "n3-line-chart/build/line-chart.js" %}"></script>
+
+  <base href="http://127.0.0.1:8081/">
+
+  <style>
+    .hljs {
+      background-color: transparent;
+    }
+  </style>
+
+  <script>
+
+    /* Setup the App */
+    angular.module('scoggle', ['ngResource', 'ngSanitize', 'btford.markdown', 'hljs', 'n3-line-chart'])
+
+    /* Configuration for the location provider */
+    .config(['$locationProvider', function($locationProvider){
+
+      $locationProvider.html5Mode(true);
+      $locationProvider.hashPrefix('!');
+    }])
+
+    /* Configuration for the interpolation symbols */
+    .config(['$interpolateProvider', function($interpolateProvider) {
+
+      $interpolateProvider.startSymbol('{$');
+      $interpolateProvider.endSymbol('$}');
+    }])
+
+    /* Configuration of the $http module */
+    .config(['$httpProvider', function($httpProvider){
+
+      $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+      $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+    }])
+
+    /* Configuration of the ngResource module */
+    .config(['$resourceProvider', function($resourceProvider){
+
+          // Don't strip trailing slashes from calculated URLs
+          $resourceProvider.defaults.stripTrailingSlashes = false;
+        }])
+
+    /* Filter to return excerpts of a text */
+    .filter('excerpt', function () {
+      return function (input) {
+
+        if (input === undefined || input === null) {
+          input = '';
+        }
+
+        var str = String(input);
+        var lfPos = str.indexOf('\n');
+
+        return lfPos > 0 ? str.substr(0, lfPos) : str;
+      };
+    })
+
+    /* Setup the API provider */
+    .factory('ApiService', ['$resource', function($resource){
+
+      var customMethods = {
+        'edit': {method:'PUT'},
+      }
+
+      return { 
+        'project': $resource(
+          '/api/v1/project/:project_id/', 
+          { project_id:'@project_id' }, 
+          customMethods
+          ),
+        'run': $resource(
+          '/api/v1/run/:run_id/?project_id=:project_id', 
+          { run_id:'@run_id', project_id:'@project_id' }, 
+          customMethods
+          )
+      }
+    }])
+
+    .controller('IndexCtrl', ['$scope', function($scope){
+
+      var now = new Date();
+
+      $scope.data = [
+        {x: new Date(now.getTime()-5*60*1000), accuracy: 60.12, logloss: 1.4},
+        {x: new Date(now.getTime()-4*60*1000), accuracy: 67.23, logloss: 0.85},
+        {x: new Date(now.getTime()-3*60*1000), accuracy: 73.35, logloss: 0.6243},
+        {x: new Date(now.getTime()-2*60*1000), accuracy: 79.33, logloss: 0.5827},
+        {x: new Date(now.getTime()-1*60*1000), accuracy: 85.89, logloss: 0.5123},
+        {x: new Date(now.getTime()-0*60*1000), accuracy: 90.12, logloss: 0.4560}
+      ];
+
+      $scope.options = {
+        axes: {
+          x: {key: 'x', type: 'date'},
+          y: {type: 'linear', min: 0, max: 100, ticks: 10},
+          y2: {type: 'log', ticks: [1e-1, 1, 1e1] }
+        },
+        series: [
+          {y: 'accuracy', color: 'steelblue', thickness: '2px', type: 'area', striped: true},
+          {y: 'logloss', axis: 'y2', color: 'lightsteelblue', visible: false, drawDots: true, dotSize: 2}
+        ],
+        lineMode: 'linear',
+        tension: 0.7,
+        drawLegend: true,
+        drawDots: true,
+        columnsHGap: 5
+      };
+
+    }]);
+
+  </script>
+
+  <style>
+    .outer-container {
+      margin-top: 58px;
+    }
+
+    .dropdown-menu {
+      padding: 15px;
+    }
+  </style>
+
+</head>
+<body>
+
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Scoggle<sup><small>beta</small></sup></a>
+      </div>
+
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li><a href="#">Documentation</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          {% if user.is_authenticated %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                <span class="glyphicon glyphicon-user"></span>
+                {% if user.first_name or user.last_name %}
+                  {{ user.first_name }} {{ user.last_name }}
+                {% else %}
+                  {{ user.username }}
+                {% endif %}
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="{% url 'user' user.username %}">Projects</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'api-auth-logout' %}">Logout</a></li>
+              </ul>
+            </li>
+          {% else %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Login <span class="caret"></span></a>
+              <div class="dropdown-menu" role="menu">
+                <h4>Login</h4>
+                {% include 'partial/auth-login.html' %}
+              </div>
+            </li>
+          {% endif %}
+        </ul>
+      </div><!-- /.navbar-collapse -->
+
+    </div>
+  </nav>
+  <div class="container outer-container">
+
+    {% if messages %}
+      {% for message in messages %}
+      <div{% if message.tags %} class="alert alert-{{ message.tags }} alert-dismissible"{% endif %} role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          {{ message }}
+      </div>
+      {% endfor %}
+
+    {% endif %}
+
+    {% block content %}
+
+    <div class="row">
+
+      <div class="col-lg-12">
+
+        <h1>Welcome to Scoggle!</h1>
+
+        <p class="lead">Scoggle is the home of your algorithm scores. Submit, analyze and visualize your performance!</p>
+
+      </div>
+
+    </div>
+
+    <div class="row" ng-controller="IndexCtrl">
+
+      <div class="col-lg-4">
+        {% if user.is_authenticated %}
+
+          <h2>1. Install Scoggle</h2>
+          
+          <p>Scoggle can be installed directly via the Python package manager <strong>pip</strong>.</p>
+          {% include 'partial/code-install-pip.html' %}
+
+          <p>You can also install Scoggle from source.</p>
+          {% include 'partial/code-install-source.html' %}
+
+        {% else %}
+  
+          <h2>1. Sign up on Scoggle</h2>
+          {% include 'partial/auth-signup.html' %}
+  
+        {% endif %}
+      </div>
+
+      <div class="col-lg-4">
+
+        <h2>2. Submit your scores</h2>
+        {% include 'partial/code-submit.html' %}
+        
+      </div>
+
+      <div class="col-lg-4">
+
+        <h2>3. Analyze your progress</h2>
+
+        <linechart data="data" options="options" mode="" height="300"></linechart>
+      </div>
+
+    </div>
+
+
+    {% endblock %}
+  </div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<script>
+    angular.module('scoggle')
+
+    .controller('UserCtrl', ['$scope', '$window', 'ApiService', function($scope, $window, API){
+
+        $scope.model = {};
+        $scope.projects = API.project.query();
+
+        $scope.createProject = function(project){
+
+            API.project.save(
+                {},
+                project,
+                function(project){
+                    $window.location.href += "/" + project.slug;
+                },
+                function(res){
+                    console.error(res);
+                }
+            );
+        };
+    }]);
+</script>
+
+<div ng-controller="UserCtrl">
+     
+    <div class="row">
+
+        <div class="col-lg-8" ng-show="projects.length">
+            
+            <h2>My projects</h2>
+
+            <div ng-repeat="project in projects">
+                
+                <h3><a href="{% url 'user' user.username %}/{$ project.slug $}" ng-bind="project.name"></a></h3>
+                <small>Last updated on {$ project.edited_at | date:'dd.MM.yyyy hh:mm' $}</small>
+                <p ng-bind="project.description | excerpt"></p>
+                <hr>
+            </div>
+
+        </div>
+
+        <div class="col-lg-8" ng-hide="projects.length">
+
+            <h2>Getting started</h2>
+
+        </div>
+
+        <div class="col-lg-4">            
+
+            <h2>Create a new project</h2>
+
+            {% include 'partial/project-edit-form.html' with show_submit=True %}
+
+        </div>
+
+    </div>
+
+
+</div>
+
+{% endblock %}

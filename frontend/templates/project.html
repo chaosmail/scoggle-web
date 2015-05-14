@@ -1,0 +1,261 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<script>
+    angular.module('scoggle')
+
+    .controller('ProjectCtrl', ['$scope', 'ApiService', function($scope, API){
+
+    	$scope.data = [];
+    	$scope.predicate = '-created_at';
+
+    	$scope.options = {
+			axes: {
+			  x: {key: 'x', type: 'date'},
+			  y: {type: 'linear', min: 0, max: 1, ticks: 10},
+			},
+			series: [],
+			lineMode: 'linear',
+			tension: 0.7,
+			drawLegend: true,
+			drawDots: true,
+			columnsHGap: 5
+		};
+
+		$scope.resetChart = function(){
+
+			$scope.data = [];
+    		$scope.options.series = [];
+		}
+
+		$scope.initChart = function(){
+			$scope.resetChart();
+
+			angular.forEach($scope.runs, function(run, idx_run){
+        		angular.forEach(run.scores, function(score){
+	        		
+	        		var point = {};
+	        		
+	        		point['x'] = new Date(score.created_at);
+	        		point['score_' + idx_run] = parseFloat(score.score);
+	        		
+	        		$scope.data.push(point);			
+        		});
+
+        		var serie = {
+        			thickness: '2px',
+        			type: 'area',
+        			// This is not working!
+        			// striped: true,
+        			y: 'score_' + idx_run,
+        			color: run.color ? run.color : 'steelblue',
+        			label: run.name ? run.name : 'score_' + idx_run
+        		};
+
+        		$scope.options.series.push(serie);
+        	});
+		}
+
+		$scope.initModel = function(){
+
+			$scope.model = $.extend({}, $scope.project);
+		}
+
+    	$scope.init = function(){
+
+    		$scope.project = API.project.get({project_id: $scope.project_id}, $scope.initModel);
+	        $scope.runs = API.run.query({ project_id: $scope.project_id }, $scope.initChart);
+    	};
+
+    	$scope.saveProject = function(project){
+
+            API.project.edit(
+                {project_id: project.project_id},
+                project,
+                function(){
+                    $('#editProject').modal('hide');
+                    $scope.init();
+                },
+                function(res){
+                    console.error(res);
+                }
+            );
+        };
+
+        $scope.saveRun = function(run){
+
+        	API.run.edit(
+                {project_id: $scope.project.project_id, run_id: run.run_id},
+                run,
+                function(){
+                    $('#editRun'+run.run_id).modal('hide');
+                    $scope.init();
+                },
+                function(res){
+                    console.error(res);
+                }
+            );
+        }
+    }]);
+</script>
+
+<div ng-controller="ProjectCtrl" ng-init="project_id='{{ project.project_id }}'; init();">
+            
+	<div class="row">
+		
+		<div class="col-lg-10">
+
+			<h2>{$ project.name $} <small><a href="#" data-toggle="modal" data-target="#editProject"><span class="glyphicon glyphicon-edit"></span></a></small></h2>
+
+			<div class="modal fade" id="editProject" tabindex="-1" role="dialog">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title">Edit project</h4>
+			      </div>
+			      <div class="modal-body">
+			        {% include 'partial/project-edit-form.html' %}
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			        <button type="button" class="btn btn-primary" ng-click="saveProject(model)">Save changes</button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+	
+
+			<div btf-markdown="project.description"></div>
+
+			<linechart data="data" options="options" mode="" height="300"></linechart>
+
+			<p class="pull-right">
+				<button type="button" class="btn btn-default" data-toggle="modal" data-target="#chartConfig">
+					<span class="glyphicon glyphicon-cog"></span>
+				  	Configure the chart
+				</button>
+			</p>
+
+			<div class="modal fade" id="chartConfig" tabindex="-1" role="dialog">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title">Chart Settings</h4>
+			      </div>
+			      <div class="modal-body">
+			        <form>
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="radio">
+		    						<label class="radio-inline">
+									    <input type="radio" name="scale" ng-model="options.axes.y.type" value="linear">
+									    linear
+									</label>
+									<label class="radio-inline">
+									    <input type="radio" name="scale" ng-model="options.axes.y.type" value="log">
+									    logarithmic
+									</label>
+								</div>
+							</div>
+							<div class="col-lg-6" ng-show="options.axes.y.type == 'linear'">
+								<div class="form-group">
+		    						<label for="inputAxesYMin">min</label>
+									<input class="form-control" id="inputAxesYMin" type="number" ng-model="options.axes.y.min">
+								</div>
+							</div>
+							<div class="col-lg-6" ng-show="options.axes.y.type == 'linear'">
+								<div class="form-group">
+		    						<label for="inputAxesYMax">max</label>
+									<input class="form-control" type="number" ng-model="options.axes.y.max">
+								</div>
+							</div>
+						</div>
+					</form>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+
+			<h3>All Scores</h3>
+
+			<div ng-repeat="run in runs" style="border-left: 2px solid {$ run.color $}; padding-left: 20px;">
+			    
+				<h4>{$ run.name $} <small><a href="#" data-toggle="modal" data-target="#editRun{$ run.run_id $}"><span class="glyphicon glyphicon-edit"></span></a></small></h4>
+			    
+				<div class="modal fade" id="editRun{$ run.run_id $}" tabindex="-1" role="dialog">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title">Edit run</h4>
+				      </div>
+				      <div class="modal-body">
+				        {% include 'partial/run-edit-form.html' %}
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				        <button type="button" class="btn btn-primary" ng-click="saveRun(run)">Save changes</button>
+				      </div>
+				    </div><!-- /.modal-content -->
+				  </div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+
+			    <table class="table table-striped">
+			    <thead>
+			    	<tr>
+			    		<th><a ng-click="predicate = 'created_at'; reverse=!reverse">Time</a></th>
+			    		<th><a ng-click="predicate = 'score'; reverse=!reverse">Score</a></th>
+			    		<th>Params</th>
+			    		<th><a ng-click="predicate = 'duration'; reverse=!reverse">Duration</a></th>
+			    	</tr>
+			    </thead>
+			    <tbody>
+		    		<tr ng-repeat="score in run.scores | orderBy:predicate:reverse">
+		    			<td ng-bind="score.created_at | date:'dd.MM.yyyy hh:mm:ss'"></td>
+		    			<td ng-bind="score.score"></td>
+		    			<td ng-bind="score.params | json"></td>
+		    			<td ng-bind="score.duration"></td>
+		    		</tr>
+			    </tbody>
+			    </table>
+			</div>
+
+		</div>
+		<div class="col-lg-2">
+			
+			<h3>Integrations</h3>
+
+			<p>
+				<button type="button" class="btn btn-default" data-toggle="modal" data-target="#apiPython">
+					<span class="glyphicon glyphicon-flash"></span>
+				  	Python API
+				</button>
+			</p>
+
+			<div class="modal fade" id="apiPython" tabindex="-1" role="dialog">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title">Python Integration</h4>
+			      </div>
+			      <div class="modal-body">
+			        {% include 'partial/code-submit.html' %}
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+		</div>
+	</div>
+</div>
+
+{% endblock %}

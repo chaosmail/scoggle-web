@@ -1,0 +1,25 @@
+<form>
+                
+    {% csrf_token %}
+
+    <div class="form-group">
+        <label for="nameRunInput">Name</label>
+        <input class="form-control" type="text" id="nameRunInput" ng-model="run.name" placeholder="Enter a name for this run">
+    </div>
+
+    <div class="form-group">
+        <label for="slugRunInput">Slug</label>
+        <input class="form-control" type="text" id="slugRunInput" ng-model="run.slug" placeholder="Enter a slug">
+    </div>
+
+    <div class="form-group">
+        <label for="colorRunInput">Color</label>
+        <input class="form-control" type="text" id="colorRunInput" ng-model="run.color" placeholder="Enter a color">
+    </div>
+
+    <div class="form-group">
+        <label for="descRunInput">Description</label>
+        <textarea class="form-control" id="descRunInput" ng-model="run.description" placeholder="Enter a description"></textarea>
+    </div>
+
+</form>
