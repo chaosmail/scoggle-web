@@ -1,0 +1,27 @@
+{% extends "settings/index.html" %}
+
+{% block settings-title %}
+My Account
+{% endblock %}
+
+{% block settings-content %}
+<form action="{% url 'api-auth-signup' %}" method="post">
+
+  <div class="form-group">
+    <label for="inputFirstname">First name</label>
+    <input id="inputFirstname" name="first_name" value="{{ user.first_name }}" class="form-control" type="text" placeholder="Enter your first name">
+  </div>
+
+  <div class="form-group">
+    <label for="inputLastname">Last name</label>
+    <input id="inputLastname" name="last_name" value="{{ user.last_name }}" class="form-control" type="text" placeholder="Enter your last name">
+  </div>
+
+  <div class="form-group">
+    <label for="inputEmail">Email</label>
+    <input id="inputEmail" name="email" value="{{ user.email }}" class="form-control" type="text" placeholder="Enter your email">
+  </div>
+
+  <button type="submit" class="btn btn-default">Save changes</button>
+</form>
+{% endblock %}

@@ -1,4 +1,5 @@
 {% extends "index.html" %}
+{% load gravatar %}
 
 {% block content %}
 
@@ -30,11 +31,44 @@
      
     <div class="row">
 
-        <div class="col-lg-8" ng-show="projects.length">
+        <div class="col-lg-9" ng-show="projects.length">
             
+            <a href="#" class="btn btn-primary pull-right edit-button" data-toggle="modal" data-target="#newProject">
+                <span class="glyphicon glyphicon-plus small"></span>
+                New project
+            </a>
+
+            <div class="modal fade" id="newProject" tabindex="-1" role="dialog" aria-labelledby="newProjectLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">New project</h4>
+                  </div>
+                  <div class="modal-body">
+                    {% include 'partial/project-edit-form.html'%}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" ng-click="createProject(model)">Save</button>
+                  </div>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+
+
             <h2>My projects</h2>
 
-            <div ng-repeat="project in projects">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search project" ng-model="search" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">
+                        <span class=" glyphicon glyphicon-search"></span>
+                    </button>
+                </span>
+            </div>
+
+            <div ng-repeat="project in projects | filter:search">
                 
                 <h3><a href="{% url 'user' user.username %}/{$ project.slug $}" ng-bind="project.name"></a></h3>
                 <small>Last updated on {$ project.edited_at | date:'dd.MM.yyyy hh:mm' $}</small>
@@ -44,18 +78,32 @@
 
         </div>
 
-        <div class="col-lg-8" ng-hide="projects.length">
+        <div class="col-lg-9" ng-hide="projects.length">
 
             <h2>Getting started</h2>
 
-        </div>
-
-        <div class="col-lg-4">            
-
-            <h2>Create a new project</h2>
+            <p>You haven't created any projects yet. Start now and create your first project!</p>
 
             {% include 'partial/project-edit-form.html' with show_submit=True %}
 
+        </div>
+
+        <div class="col-lg-3">
+
+            <img src="{% gravatar_url user.email 260 %}" widht="260" alt="" class="img-rounded gravatar">
+            <br><br>            
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{% block sidebar-title %}{{ user.username }}{% endblock %}</h3>
+                </div>
+                <div class="panel-body">
+                {% block sidebar %}
+                    <ul role="menu" class="sidebar-menu">
+                        <li role="presentation"><a role="menuitem" href="{% url 'settings-account' %}">Edit my profile</a></li>
+                    </ul>
+                {% endblock %}
+                </div>
+            </div>
         </div>
 
     </div>

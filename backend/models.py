@@ -22,6 +22,9 @@ class Project(models.Model):
     def __str__(self):
         return self.slug
 
+    class Meta:
+        unique_together = ('owner', 'slug',)
+
 
 class Run(models.Model):
     project = models.ForeignKey(Project, related_name='runs')
@@ -35,6 +38,9 @@ class Run(models.Model):
 
     def __str__(self):
         return self.slug
+
+    class Meta:
+        unique_together = ('project', 'slug',)
 
 
 class Score(models.Model):

@@ -1,13 +1,15 @@
 <div hljs language="python">
 import scoggle
 
-# Access Scoggle with your API key
-scoggle.init('{% if token %}{{ token.key }}{% else %}insert_api_key_here{% endif %}')
+# Configure Scoggle with your API key
+scoggle.key('{% if token %}{{ token.key }}{% else %}insert_api_key_here{% endif %}')
+# and the url of your scoggle installation
+scoggle.url('{% if host %}{{ host }}{% else %}insert_scoggle_url_here{% endif %}')
 
-# Get a project
+# Get or create a project
 scoggle.project('{% if project %}{{ project.slug }}{% else %}my-project{% endif %}')
-
-{% if project %}# Get a run
+{% if project %}
+# Get or create a run
 scoggle.run('neural-net')
 {% endif %}
 # Run some algorithm and retrieve a score
@@ -15,6 +17,6 @@ scoggle.run('neural-net')
 score = 0.95
 prams = {n_steps: 200, p: 0.1}
 
-# Submit your scores
+# Submit your score
 scoggle.score(score, params=params)
 </div>

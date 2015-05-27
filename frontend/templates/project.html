@@ -112,9 +112,14 @@
             
 	<div class="row">
 		
-		<div class="col-lg-10">
+		<div class="col-lg-9">
 
-			<h2>{$ project.name $} <small><a href="#" data-toggle="modal" data-target="#editProject"><span class="glyphicon glyphicon-edit"></span></a></small></h2>
+			<a href="#" class="btn btn-primary pull-right edit-button" data-toggle="modal" data-target="#editProject">
+                <span class="glyphicon glyphicon-edit small"></span>
+                Edit project
+            </a>
+
+			<h2>{$ project.name $}</h2>
 
 			<div class="modal fade" id="editProject" tabindex="-1" role="dialog">
 			  <div class="modal-dialog">
@@ -141,7 +146,11 @@
 			<div btf-markdown="project.description"></div>
 
 			<div ng-hide="runs.length">
+				
+				<p>You haven't submitted any scores yet. Please use the Python Integration or other available APIs to submit your scores!</p>
+				
 				<h3>Python Integration</h3>
+
 				{% include 'partial/code-submit.html' %}
 			</div>
 
@@ -278,16 +287,20 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-lg-2">
+		<div class="col-lg-3">
 			
-			<h3>Integrations</h3>
-
-			<p>
-				<button type="button" class="btn btn-default" data-toggle="modal" data-target="#apiPython">
-					<span class="glyphicon glyphicon-flash"></span>
-				  	Python API
-				</button>
-			</p>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">{% block sidebar-title %}Integrations: {{ project.slug }}{% endblock %}</h3>
+				</div>
+				<div class="panel-body">
+				{% block sidebar %}
+					<ul role="menu" class="sidebar-menu">
+						<li role="presentation"><a role="menuitem" href="#" data-toggle="modal" data-target="#apiPython">Python API</a></li>
+					</ul>
+				{% endblock %}
+				</div>
+			</div>
 
 			<div class="modal fade" id="apiPython" tabindex="-1" role="dialog">
 			  <div class="modal-dialog">

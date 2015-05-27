@@ -36,6 +36,34 @@
     .table-striped .hljs {
       background-color: transparent;
     }
+
+    .edit-button {
+      margin-top: 16px;
+    }
+
+    .sidebar-menu {
+      display: block;
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar-menu>li {
+      display: inline;
+      list-style: none;
+    }
+    .sidebar-menu>li>a {
+      display: block;
+      padding: 3px 20px;
+      clear: both;
+      font-weight: 400;
+      line-height: 1.42857143;
+      color: #333;
+      white-space: nowrap;
+    }
+    .sidebar-menu>li>a:focus, .sidebar-menu>li>a:hover {
+      color: #262626;
+      text-decoration: none;
+      background-color: #f5f5f5;
+    }
   </style>
 
   <script>
@@ -108,32 +136,49 @@
       }
     }])
 
-    .controller('IndexCtrl', ['$scope', function($scope){
+    .controller('IndexCtrl', ['$scope', '$interval', function($scope, $interval){
 
       var now = new Date();
 
       $scope.data = [
-        {x: new Date(now.getTime()-5*60*1000), accuracy: 60.12},
-        {x: new Date(now.getTime()-4*60*1000), accuracy: 67.235},
-        {x: new Date(now.getTime()-3*60*1000), accuracy: 73.35243},
-        {x: new Date(now.getTime()-2*60*1000), accuracy: 79.33827},
-        {x: new Date(now.getTime()-1*60*1000), accuracy: 85.89123},
-        {x: new Date(now.getTime()-0*60*1000), accuracy: 90.12560}
+        {x: new Date(now.getTime()-5*2*1000), accuracy: 60.12},
+        {x: new Date(now.getTime()-4*2*1000), accuracy: 65.23},
+        {x: new Date(now.getTime()-3*2*1000), accuracy: 70.35},
       ];
+
+      $interval(function(){
+
+        $scope.data.push(
+          {x: new Date(), accuracy: 100-(100-$scope.data[$scope.data.length - 1].accuracy)*0.75 }
+        );
+
+        if ($scope.data.length > 10) {
+          $scope.options.axes.x.ticksInterval = 10;
+        }
+        else if ($scope.data.length > 20) {
+          $scope.options.axes.x.ticksInterval = 30;
+        }
+        else if ($scope.data.length > 30) {
+          $scope.options.axes.x.ticks = d3.time.minute;
+          $scope.options.axes.x.ticksInterval = 1;
+        }
+
+      }, 2000);
 
       $scope.options = {
         margin: {
-          left: 40,
-          bottom: 65
+          left: 25,
+          right: 0,
+          bottom: 75
         },
         axes: {
-          x: {key: 'x', type: 'date', tooltipFormat: '%c', ticksFormat: '%H:%M', ticksRotate: 30, ticks: d3.time.minute},
+          x: {key: 'x', type: 'date', tooltipFormat: '%c', ticksFormat: '%H:%M:%S', ticksRotate: -30, ticks: d3.time.second, ticksInterval: 5},
           y: {type: 'linear', min: 0, max: 100, ticks: 10, ticksFormat: 'i', tooltipFormat: '.2f'}
         },
         series: [
           {y: 'accuracy', color: 'steelblue', thickness: '2px', type: 'area', striped: true}
         ],
-        tooltip: {mode: 'axes'},
+        tooltip: {mode: 'none'},
         lineMode: 'cardinal',
         tension: 0.7,
         drawLegend: true,
@@ -187,7 +232,16 @@
                 <span class="caret"></span>
               </a>
               <ul class="dropdown-menu" role="menu">
-                <li><a href="{% url 'user' user.username %}">Projects</a></li>
+                <li>
+                  <a href="{% url 'user' user.username %}">
+                    Projects
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'settings' %}">
+                    Settings
+                  </a>
+                </li>
                 <li class="divider"></li>
                 <li><a href="{% url 'api-auth-logout' %}">Logout</a></li>
               </ul>
@@ -210,8 +264,9 @@
 
     {% if messages %}
       {% for message in messages %}
-      <div{% if message.tags %} class="alert alert-{{ message.tags }} alert-dismissible"{% endif %} role="alert">
+      <div{% if message.tags %} class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible"{% endif %} role="alert">
           <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          {% if message.tags == 'error' %}<strong>Warning: </strong>{% endif %}
           {{ message }}
       </div>
       {% endfor %}

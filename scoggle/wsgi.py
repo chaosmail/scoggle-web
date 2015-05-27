@@ -11,11 +11,13 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 from django.conf import settings
-from whitenoise.django import DjangoWhiteNoise
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "scoggle.settings")
 
 application = get_wsgi_application()
 
-# Serve the static file with Django WhiteNoise package
-application = DjangoWhiteNoise(application)
+if os.environ.get('DJANGO_SECRET_KEY'):
+	from whitenoise.django import DjangoWhiteNoise
+	
+	# Serve the static file with Django WhiteNoise package
+	application = DjangoWhiteNoise(application)

@@ -1,0 +1,37 @@
+{% extends "settings/index.html" %}
+
+{% block settings-title %}
+My API keys
+{% endblock %}
+
+{% block settings-content %}
+
+<p>An API key allows you to safely submit your scores to scoggle without providing your user credentials.</p>
+
+
+{% if token %}
+
+	<h3>Acitve key</h3>
+	
+	<p>Following key was created on {{ token.created }}.</p>
+
+	<div class="pull-left text-success" style="padding: 9.5px;">
+		<span class="glyphicon glyphicon-flash" style="padding: 0.5em;"></span>
+	</div>
+	<div hljs>{{ token.key }}</div>
+	
+	<h3>Configuration</h3>
+
+	<p>If you don't want to emebd your API key into the code, you can also create a <strong>~/.scogglerc</strong> file with the following content.</p>
+
+	{% include 'partial/code-config.html' %}
+
+{% else %}
+
+	<p>Currently there are not API keys defined.</p>
+
+{% endif %}
+
+
+
+{% endblock %}

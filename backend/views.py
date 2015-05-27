@@ -28,9 +28,7 @@ def auth_login(request):
         else:
             # TODO: Translate
             messages.error(request, "The username or password is invalid!")
-
-    # TODO: Translate
-    messages.error(request, "Login requires POST request!")
+    
     return redirect('index')
 
 def auth_logout(request):
@@ -76,8 +74,6 @@ def auth_signup(request):
             # Redirect to user's page
             return redirect('user', username=user.username)
 
-    # TODO: Translate
-    messages.error(request, "Creating a user requires POST request!")
     return redirect('index')
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

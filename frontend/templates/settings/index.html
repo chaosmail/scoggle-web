@@ -1,0 +1,27 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="row">
+
+	<div class="col-lg-9">
+		<h2>{% block settings-title %}{% endblock %}</h2>
+		{% block settings-content %}{% endblock %}
+	</div>
+
+	<div class="col-lg-3">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">{% block sidebar-title %}Personal settings{% endblock %}</h3>
+			</div>
+			<div class="panel-body">
+			{% block sidebar %}
+				<ul role="menu" class="sidebar-menu">
+					<li role="presentation"><a role="menuitem" href="{% url 'settings-account' %}">Profile</a></li>
+					<li role="presentation"><a role="menuitem" href="{% url 'settings-keys' %}">API keys</a></li>
+				</ul>
+			{% endblock %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
