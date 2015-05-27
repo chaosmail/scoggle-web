@@ -167,7 +167,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#">Scoggle<sup><small>beta</small></sup></a>
+        <a class="navbar-brand" href="{% url 'index' %}">Scoggle<sup><small>alpha</small></sup></a>
       </div>
 
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -237,7 +237,7 @@
       <div class="col-lg-4">
         {% if user.is_authenticated %}
 
-          <h2>1. Install Scoggle</h2>
+          <h2>1. Install Scoggle API</h2>
           
           <p>Scoggle can be installed directly via the Python package manager <strong>pip</strong>.</p>
           {% include 'partial/code-install-pip.html' %}
