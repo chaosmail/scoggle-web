@@ -5,6 +5,9 @@ from settings import *
 
 import dj_database_url
 
+# Set a root directory for the static files
+STATIC_ROOT = ".static/"
+
 # Parse database configuration from $DATABASE_URL
 DATABASES['default'] =  dj_database_url.config()
 
