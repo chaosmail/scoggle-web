@@ -105,12 +105,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# App folder for static files
-
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-)
-
 # Rest Framework Configuration
 # http://www.django-rest-framework.org/api-guide/authentication/#setting-the-authentication-scheme
 
