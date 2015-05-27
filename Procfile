@@ -1,1 +1,1 @@
-web: gunicorn scoggle.wsgi
+web: DJANGO_SETTINGS_MODULE=scoggle.settings_production  gunicorn scoggle.wsgi:application
