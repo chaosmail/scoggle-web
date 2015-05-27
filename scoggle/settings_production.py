@@ -1,9 +1,15 @@
+import os
+
 # Import the common Settings
 from settings import *
 
 """Place all production settings here"""
-
 import dj_database_url
+
+# Disable debugging in production
+DEBUG = False
+
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # Set a root directory for the static files
 STATIC_ROOT = "staticfiles"

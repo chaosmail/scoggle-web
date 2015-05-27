@@ -14,6 +14,12 @@ Set the Django env vars to use production settings
 heroku config:set DJANGO_SETTINGS_MODULE=scoggle.settings_production
 ```
 
+Generate a new Django secret key and add it to the env
+
+```
+heroku config:set DJANGO_SECRET_KEY='new_secret_key_goes_here'
+```
+
 Push the master branch to heroku.
 
 ```
