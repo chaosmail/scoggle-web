@@ -9,7 +9,13 @@ import dj_database_url
 # Disable debugging in production
 DEBUG = False
 
+# Read the secret key from env var
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+
+# Allow heroku hosts
+ALLOWED_HOSTS = [
+	'.herokuapp.com'
+]
 
 # Set a root directory for the static files
 STATIC_ROOT = "staticfiles"
