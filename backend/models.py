@@ -20,7 +20,7 @@ class Project(models.Model):
     description = models.TextField(default="", blank=True)
 
     def __str__(self):
-        return self.name
+        return self.slug
 
 
 class Run(models.Model):
@@ -29,12 +29,12 @@ class Run(models.Model):
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     edited_at = AutoDateTimeField(default=timezone.now, editable=False)
     slug = models.SlugField(max_length=50, default="")
-    color = models.CharField(max_length=50, default="steelblue")
-    name = models.CharField(max_length=255, default="")
+    color = models.CharField(max_length=50, default="steelblue", blank=True)
+    name = models.CharField(max_length=255, default="", blank=True)
     description = models.TextField(default="", blank=True)
 
     def __str__(self):
-        return self.name
+        return self.slug
 
 
 class Score(models.Model):

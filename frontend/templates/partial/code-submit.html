@@ -8,7 +8,7 @@ scoggle.init('{% if token %}{{ token.key }}{% else %}insert_api_key_here{% endif
 scoggle.project('{% if project %}{{ project.slug }}{% else %}my-project{% endif %}')
 
 {% if project %}# Get a run
-scoggle.run('neural_net'){% endif %}
+scoggle.run('neural-net'){% endif %}
 
 # Run some algorithm and retrieve a score
 # ...

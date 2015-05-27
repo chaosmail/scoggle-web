@@ -22,10 +22,13 @@
   <script src="{% static "angular-highlightjs/angular-highlightjs.js" %}"></script>
   <script src="{% static "n3-line-chart/build/line-chart.js" %}"></script>
 
-  <base href="http://127.0.0.1:8081/">
-
   <style>
-    .hljs {
+    pre {
+      border: none;
+      background-color: transparent;
+    }
+
+    .table-striped .hljs {
       background-color: transparent;
     }
   </style>
@@ -33,7 +36,8 @@
   <script>
 
     /* Setup the App */
-    angular.module('scoggle', ['ngResource', 'ngSanitize', 'btford.markdown', 'hljs', 'n3-line-chart'])
+    angular.module('scoggle', ['ngResource', 'ngSanitize', 
+      'btford.markdown', 'hljs', 'n3-line-chart'])
 
     /* Configuration for the location provider */
     .config(['$locationProvider', function($locationProvider){

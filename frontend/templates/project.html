@@ -12,9 +12,10 @@
 
     	$scope.options = {
 			axes: {
-			  x: {key: 'x', type: 'date'},
-			  y: {type: 'linear', min: 0, max: 1, ticks: 10},
+			  x: {key: 'x', type: 'date', ticksFormat: '%H:%M', tooltipFormat: '%d.%m.%Y %H:%M:%S'},
+			  y: {type: 'linear', min: 0.0, max: 1.0, ticks: 10, ticksFormat: '.2f', tooltipFormat: '.4f'},
 			},
+			tooltip: {mode: 'axes'},
 			series: [],
 			lineMode: 'linear',
 			tension: 0.7,
@@ -31,7 +32,8 @@
 
 		$scope.initChart = function(){
 			$scope.resetChart();
-
+			$scope.updateSeries();
+			
 			angular.forEach($scope.runs, function(run, idx_run){
         		angular.forEach(run.scores, function(score){
 	        		
@@ -42,20 +44,21 @@
 	        		
 	        		$scope.data.push(point);			
         		});
-
-        		var serie = {
-        			thickness: '2px',
-        			type: 'area',
-        			// This is not working!
-        			// striped: true,
-        			y: 'score_' + idx_run,
-        			color: run.color ? run.color : 'steelblue',
-        			label: run.name ? run.name : 'score_' + idx_run
-        		};
-
-        		$scope.options.series.push(serie);
         	});
 		}
+
+		$scope.updateSeries = function(){
+			$scope.options.series = $scope.runs.map(function(run, idx_run){
+				return {
+        			thickness: '2px',
+        			type: run.type || 'area',
+        			striped: true,
+        			y: 'score_' + idx_run,
+        			color: run.color || 'steelblue',
+        			label: run.name || run.slug
+        		};
+			});
+		};
 
 		$scope.initModel = function(){
 
@@ -86,7 +89,7 @@
         $scope.saveRun = function(run){
 
         	API.run.edit(
-                {project_id: $scope.project.project_id, run_id: run.run_id},
+                {run_id: run.run_id},
                 run,
                 function(){
                     $('#editRun'+run.run_id).modal('hide');
@@ -96,7 +99,12 @@
                     console.error(res);
                 }
             );
-        }
+        };
+
+        $scope.$watch('[runs]', function(){
+
+        	$scope.updateSeries();
+        }, true);
     }]);
 </script>
 
@@ -126,106 +134,149 @@
 			  </div><!-- /.modal-dialog -->
 			</div><!-- /.modal -->
 	
+			<p ng-show="project.url">
+				Link: <a href="{$ project.url $}">{$ project.url $}</a>
+			</p>
 
 			<div btf-markdown="project.description"></div>
 
-			<linechart data="data" options="options" mode="" height="300"></linechart>
+			<div ng-hide="runs.length">
+				<h3>Python Integration</h3>
+				{% include 'partial/code-submit.html' %}
+			</div>
 
-			<p class="pull-right">
-				<button type="button" class="btn btn-default" data-toggle="modal" data-target="#chartConfig">
-					<span class="glyphicon glyphicon-cog"></span>
-				  	Configure the chart
-				</button>
-			</p>
+			<div ng-show="runs.length">
 
-			<div class="modal fade" id="chartConfig" tabindex="-1" role="dialog">
-			  <div class="modal-dialog">
-			    <div class="modal-content">
-			      <div class="modal-header">
-			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			        <h4 class="modal-title">Chart Settings</h4>
-			      </div>
-			      <div class="modal-body">
-			        <form>
-						<div class="row">
-							<div class="col-lg-12">
-								<div class="radio">
-		    						<label class="radio-inline">
-									    <input type="radio" name="scale" ng-model="options.axes.y.type" value="linear">
-									    linear
-									</label>
-									<label class="radio-inline">
-									    <input type="radio" name="scale" ng-model="options.axes.y.type" value="log">
-									    logarithmic
-									</label>
-								</div>
-							</div>
-							<div class="col-lg-6" ng-show="options.axes.y.type == 'linear'">
-								<div class="form-group">
-		    						<label for="inputAxesYMin">min</label>
-									<input class="form-control" id="inputAxesYMin" type="number" ng-model="options.axes.y.min">
-								</div>
-							</div>
-							<div class="col-lg-6" ng-show="options.axes.y.type == 'linear'">
-								<div class="form-group">
-		    						<label for="inputAxesYMax">max</label>
-									<input class="form-control" type="number" ng-model="options.axes.y.max">
-								</div>
-							</div>
-						</div>
-					</form>
-			      </div>
-			      <div class="modal-footer">
-			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			      </div>
-			    </div><!-- /.modal-content -->
-			  </div><!-- /.modal-dialog -->
-			</div><!-- /.modal -->
+				<linechart data="data" options="options" mode="" height="300"></linechart>
 
-			<h3>All Scores</h3>
+				<p class="pull-right">
+					<button type="button" class="btn btn-default" data-toggle="modal" data-target="#chartConfig">
+						<span class="glyphicon glyphicon-cog"></span>
+					  	Configure the chart
+					</button>
+				</p>
 
-			<div ng-repeat="run in runs" style="border-left: 2px solid {$ run.color $}; padding-left: 20px;">
-			    
-				<h4>{$ run.name $} <small><a href="#" data-toggle="modal" data-target="#editRun{$ run.run_id $}"><span class="glyphicon glyphicon-edit"></span></a></small></h4>
-			    
-				<div class="modal fade" id="editRun{$ run.run_id $}" tabindex="-1" role="dialog">
+				<div class="modal fade" id="chartConfig" tabindex="-1" role="dialog">
 				  <div class="modal-dialog">
 				    <div class="modal-content">
 				      <div class="modal-header">
 				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				        <h4 class="modal-title">Edit run</h4>
+				        <h4 class="modal-title">Chart Settings</h4>
 				      </div>
 				      <div class="modal-body">
-				        {% include 'partial/run-edit-form.html' %}
+				        <form>
+							<div class="row">
+								<div class="col-lg-12">
+									<h3>x-axis</h3>
+								</div>
+								<!-- TODO: We need to find a good way to display datetimes 
+								<div class="col-lg-6">
+									<div class="form-group">
+			    						<label for="inputAxesXMin">min value</label>
+										<input class="form-control" id="inputAxesXMin" type="text" ng-model="options.axes.x.min">
+									</div>
+								</div>
+								<div class="col-lg-6">
+									<div class="form-group">
+			    						<label for="inputAxesXMax">max value</label>
+										<input class="form-control" id="inputAxesXMax" type="text" ng-model="options.axes.x.max">
+									</div>
+								</div> -->
+								<div class="col-lg-6">
+									<div class="form-group">
+			    						<label for="inputXTicksFormat">ticks format</label>
+										<input class="form-control" id="inputXTicksFormat" type="text" ng-model="options.axes.x.ticksFormat">
+									</div>
+								</div>
+								<div class="col-lg-6">
+									<div class="form-group">
+			    						<label for="inputXTooltipFormat">tooltip format</label>
+										<input class="form-control" id="inputXTooltipFormat" type="text" ng-model="options.axes.x.tooltipFormat">
+									</div>
+								</div>
+								<div class="col-lg-12">
+									<h3>y-axis</h3>
+								</div>
+								<div class="col-lg-6">
+									<div class="form-group">
+			    						<label for="inputYTicksFormat">ticks format</label>
+										<input class="form-control" id="inputYTicksFormat" type="text" ng-model="options.axes.y.ticksFormat">
+									</div>
+								</div>
+								<div class="col-lg-6">
+									<div class="form-group">
+			    						<label for="inputYTooltipFormat">tooltip format</label>
+										<input class="form-control" id="inputYTooltipFormat" type="text" ng-model="options.axes.y.tooltipFormat">
+									</div>
+								</div>
+								<div class="col-lg-6">
+									<div class="form-group">
+			    						<label for="inputAxesYMin">min</label>
+										<input class="form-control" id="inputAxesYMin" type="number" step="any" ng-model="options.axes.y.min">
+									</div>
+								</div>
+								<div class="col-lg-6" ng-show="options.axes.y.type == 'linear'">
+									<div class="form-group">
+			    						<label for="inputAxesYMax">max</label>
+										<input class="form-control" id="inputAxesYMax" type="number" step="any" ng-model="options.axes.y.max">
+									</div>
+								</div>
+							</div>
+						</form>
 				      </div>
 				      <div class="modal-footer">
 				        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				        <button type="button" class="btn btn-primary" ng-click="saveRun(run)">Save changes</button>
 				      </div>
 				    </div><!-- /.modal-content -->
 				  </div><!-- /.modal-dialog -->
 				</div><!-- /.modal -->
 
-			    <table class="table table-striped">
-			    <thead>
-			    	<tr>
-			    		<th><a ng-click="predicate = 'created_at'; reverse=!reverse">Time</a></th>
-			    		<th><a ng-click="predicate = 'score'; reverse=!reverse">Score</a></th>
-			    		<th>Params</th>
-			    		<th><a ng-click="predicate = 'duration'; reverse=!reverse">Duration</a></th>
-			    	</tr>
-			    </thead>
-			    <tbody>
-		    		<tr ng-repeat="score in run.scores | orderBy:predicate:reverse">
-		    			<td ng-bind="score.created_at | date:'dd.MM.yyyy hh:mm:ss'"></td>
-		    			<td ng-bind="score.score"></td>
-		    			<td ng-bind="score.params | json"></td>
-		    			<td ng-bind="score.duration"></td>
-		    		</tr>
-			    </tbody>
-			    </table>
-			</div>
+				<h3>All Scores</h3>
 
+				<div ng-repeat="run in runs" style="border-left: 2px solid {$ run.color $}; padding-left: 20px;">
+				    
+					<h4>{$ run.name || run.slug $} <small><a href="#" data-toggle="modal" data-target="#editRun{$ run.run_id $}"><span class="glyphicon glyphicon-edit"></span></a></small></h4>
+				    
+					<div class="modal fade" id="editRun{$ run.run_id $}" tabindex="-1" role="dialog">
+					  <div class="modal-dialog">
+					    <div class="modal-content">
+					      <div class="modal-header">
+					        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					        <h4 class="modal-title">Edit run</h4>
+					      </div>
+					      <div class="modal-body">
+					        {% include 'partial/run-edit-form.html' %}
+					      </div>
+					      <div class="modal-footer">
+					        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					        <button type="button" class="btn btn-primary" ng-click="saveRun(run)">Save changes</button>
+					      </div>
+					    </div><!-- /.modal-content -->
+					  </div><!-- /.modal-dialog -->
+					</div><!-- /.modal -->
+
+				    <table class="table table-striped">
+				    <thead>
+				    	<tr>
+				    		<th><a ng-click="predicate = 'created_at'; reverse=!reverse">Time</a></th>
+				    		<th><a ng-click="predicate = 'score'; reverse=!reverse">Score</a></th>
+				    		<th>Params</th>
+				    		<th><a ng-click="predicate = 'duration'; reverse=!reverse">Duration</a></th>
+				    		<th></th>
+				    	</tr>
+				    </thead>
+				    <tbody>
+			    		<tr ng-repeat="score in run.scores | orderBy:predicate:reverse">
+			    			<td ng-bind="score.created_at | date:'dd.MM.yyyy hh:mm:ss'"></td>
+			    			<td ng-bind="score.score"></td>
+			    			<td hljs source="score.params | json"></td>
+			    			<td ng-bind="score.duration"></td>
+			    			<td><small><span class="glyphicon glyphicon-trash"></span></small></td>
+			    		</tr>
+				    </tbody>
+				    </table>
+				</div>
+			</div>
 		</div>
 		<div class="col-lg-2">
 			
