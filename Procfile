@@ -1,1 +1,1 @@
-web: gunicorn scoggle.wsgi:application
+web: gunicorn scoggle.wsgi:application -c config/gunicorn.conf
