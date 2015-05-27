@@ -113,29 +113,31 @@
       var now = new Date();
 
       $scope.data = [
-        {x: new Date(now.getTime()-5*60*1000), accuracy: 60.12, logloss: 1.4},
-        {x: new Date(now.getTime()-4*60*1000), accuracy: 67.23, logloss: 0.85},
-        {x: new Date(now.getTime()-3*60*1000), accuracy: 73.35, logloss: 0.6243},
-        {x: new Date(now.getTime()-2*60*1000), accuracy: 79.33, logloss: 0.5827},
-        {x: new Date(now.getTime()-1*60*1000), accuracy: 85.89, logloss: 0.5123},
-        {x: new Date(now.getTime()-0*60*1000), accuracy: 90.12, logloss: 0.4560}
+        {x: new Date(now.getTime()-5*60*1000), accuracy: 60.12},
+        {x: new Date(now.getTime()-4*60*1000), accuracy: 67.235},
+        {x: new Date(now.getTime()-3*60*1000), accuracy: 73.35243},
+        {x: new Date(now.getTime()-2*60*1000), accuracy: 79.33827},
+        {x: new Date(now.getTime()-1*60*1000), accuracy: 85.89123},
+        {x: new Date(now.getTime()-0*60*1000), accuracy: 90.12560}
       ];
 
       $scope.options = {
+        margin: {
+          left: 40,
+          bottom: 65
+        },
         axes: {
-          x: {key: 'x', type: 'date'},
-          y: {type: 'linear', min: 0, max: 100, ticks: 10},
-          y2: {type: 'log', ticks: [1e-1, 1, 1e1] }
+          x: {key: 'x', type: 'date', tooltipFormat: '%c', ticksFormat: '%H:%M', ticksRotate: 30, ticks: d3.time.minute},
+          y: {type: 'linear', min: 0, max: 100, ticks: 10, ticksFormat: 'i', tooltipFormat: '.2f'}
         },
         series: [
-          {y: 'accuracy', color: 'steelblue', thickness: '2px', type: 'area', striped: true},
-          {y: 'logloss', axis: 'y2', color: 'lightsteelblue', visible: false, drawDots: true, dotSize: 2}
+          {y: 'accuracy', color: 'steelblue', thickness: '2px', type: 'area', striped: true}
         ],
-        lineMode: 'linear',
+        tooltip: {mode: 'axes'},
+        lineMode: 'cardinal',
         tension: 0.7,
         drawLegend: true,
         drawDots: true,
-        columnsHGap: 5
       };
 
     }]);
