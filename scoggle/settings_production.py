@@ -7,7 +7,7 @@ from settings import *
 import dj_database_url
 
 # Disable debugging in production
-DEBUG = True
+DEBUG = False
 
 # Read the secret key from env var
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
