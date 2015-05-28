@@ -217,7 +217,9 @@
 
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-          <li><a href="#">Documentation</a></li>
+          <!-- <li><a href="#">Documentation</a></li> -->
+          <li><a target="_new" href="https://github.com/chaosmail/scoggle">Fork on GitHub <span class="
+glyphicon glyphicon-new-window small"></span></a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           {% if user.is_authenticated %}
@@ -327,5 +329,11 @@
 
     {% endblock %}
   </div>
+<footer>
+  <hr>
+  <div class="container small" align="center">
+    Scoggle is provided under MIT License and made with <span class="glyphicon glyphicon-heart small"></span> by <a href="https://github.com/chaosmail">Christoph Körner</a>
+  </div>
+</footer>
 </body>
 </html>

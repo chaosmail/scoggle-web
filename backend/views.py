@@ -76,6 +76,73 @@ def auth_signup(request):
 
     return redirect('index')
 
+def auth_update_profile(request):
+
+    if request.method == 'POST':
+        email = request.POST['email']
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+
+        request.user.email = email
+        request.user.first_name = first_name
+        request.user.last_name = last_name
+            
+        # Save the user
+        request.user.save()
+
+        # TODO: Translate
+        messages.success(request, "Your profile was updated successfully!")
+
+        # Redirect to user's profile settings
+        return redirect('settings-profile')
+
+    return redirect('index')
+
+def auth_create_token(request):
+
+    if request.user:
+
+        try:
+            token = Token.objects.get(user=request.user)
+        except Token.DoesNotExist:
+            token = None
+
+        # If there is a token available, remove it
+        if token:
+            token.delete()
+
+        # Generate a new token
+        Token.objects.create(user=request.user)
+
+        # TODO: Translate
+        messages.success(request, "Your API key was created successfully!")
+
+        # Redirect to user's key settings
+        return redirect('settings-keys')
+
+    return redirect('index')
+
+def auth_remove_token(request):
+
+    if request.user:
+
+        try:
+            token = Token.objects.get(user=request.user)
+        except Token.DoesNotExist:
+            token = None
+
+        # If there is a token available, remove it
+        if token:
+            token.delete()
+
+            # TODO: Translate
+            messages.success(request, "Your API key was removed successfully!")
+
+        # Redirect to user's key settings
+        return redirect('settings-keys')
+
+    return redirect('index')
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:

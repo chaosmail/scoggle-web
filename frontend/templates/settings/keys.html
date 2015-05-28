@@ -18,17 +18,38 @@ My API keys
 	<div class="pull-left text-success" style="padding: 9.5px;">
 		<span class="glyphicon glyphicon-flash" style="padding: 0.5em;"></span>
 	</div>
-	<div hljs>{{ token.key }}</div>
+	<div hljs language="ini">{{ token.key }}</div>
+
+	<a href="{% url 'api-auth-create-token' %}" class="btn btn-primary">
+		<span class="glyphicon glyphicon-refresh small"></span>
+		Reset your API key
+	</a>
 	
-	<h3>Configuration</h3>
+	<a href="{% url 'api-auth-remove-token' %}" class="btn btn-danger">
+		<span class="glyphicon glyphicon-trash small"></span>
+		Remove your API key
+	</a>
 
-	<p>If you don't want to emebd your API key into the code, you can also create a <strong>~/.scogglerc</strong> file with the following content.</p>
+	<h3>Configuration File</h3>
 
-	{% include 'partial/code-config.html' %}
+	<p>If you don't want to emebd your API key into the code, you can also create a <strong>~/.scogglerc</strong> file with the following content. Now, the integration APIs will load them automatically.</p>
+
+	{% include 'partial/code-config-file.html' %}
+
+	<h3>Configuration via environment variables</h3>
+
+	<p>You can also set the scoggle url and your API key as environment variables and the integration APIs will discover them automatically.</p>
+
+	{% include 'partial/code-config-environ.html' %}
 
 {% else %}
 
 	<p>Currently there are not API keys defined.</p>
+
+	<a href="{% url 'api-auth-create-token' %}" class="btn btn-primary">
+		<span class="glyphicon glyphicon-plus small"></span>
+		Create an API key
+	</a>
 
 {% endif %}
 

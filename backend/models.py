@@ -14,9 +14,9 @@ class Project(models.Model):
     project_id = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     edited_at = AutoDateTimeField(default=timezone.now, editable=False)
-    slug = models.SlugField(max_length=50, default="")
-    url = models.URLField(max_length=200, default="")
     name = models.CharField(max_length=255, default="")
+    slug = models.SlugField(max_length=50, default="")
+    url = models.URLField(max_length=200, default="", blank=True)
     description = models.TextField(default="", blank=True)
 
     def __str__(self):

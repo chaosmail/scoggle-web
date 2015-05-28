@@ -39,20 +39,17 @@ def project(request, username, project_slug):
     except Token.DoesNotExist:
         token = None
 
-    url = 'https://' if request.is_secure() else 'http://'
-    url += request.get_host()
-
-    context = {'project': project, 'token': token, 'host': url}
+    context = {'project': project, 'token': token}
     return render(request, 'project.html', context)
 
 @login_required
 def settings(request):
-    return redirect('settings-account')
+    return redirect('settings-profile')
 
 @login_required
-def settings_account(request):
+def settings_profile(request):
     context = {}
-    return render(request, 'settings/account.html', context)
+    return render(request, 'settings/profile.html', context)
 
 @login_required
 def settings_keys(request):
@@ -61,8 +58,5 @@ def settings_keys(request):
     except Token.DoesNotExist:
         token = None
 
-    url = 'https://' if request.is_secure() else 'http://'
-    url += request.get_host()
-
-    context = {'token': token, 'host': url}
+    context = {'token': token}
     return render(request, 'settings/keys.html', context)

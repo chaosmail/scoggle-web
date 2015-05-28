@@ -139,8 +139,8 @@
 			  </div><!-- /.modal-dialog -->
 			</div><!-- /.modal -->
 	
-			<p ng-show="project.url">
-				Link: <a href="{$ project.url $}">{$ project.url $}</a>
+			<p class="small">
+				Last updated on {$ project.edited_at | date:'d.M.yyyy H:m' $}
 			</p>
 
 			<div btf-markdown="project.description"></div>
@@ -291,14 +291,27 @@
 			
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">{% block sidebar-title %}Integrations: {{ project.slug }}{% endblock %}</h3>
+					<h3 class="panel-title">{% block sidebar-title %}{{ project.slug }}{% endblock %}</h3>
 				</div>
 				<div class="panel-body">
 				{% block sidebar %}
 					<ul role="menu" class="sidebar-menu">
-						<li role="presentation"><a role="menuitem" href="#" data-toggle="modal" data-target="#apiPython">Python API</a></li>
+						<!-- <li role="presentation"><a role="menuitem" href="#">Settings</a></li> -->
+						<li role="presentation" ng-show="project.url"><a role="menuitem" href="{$ project.url $}" target="_new">Open project link <span class="
+glyphicon glyphicon-new-window small"></span></a></li>
 					</ul>
 				{% endblock %}
+				</div>
+			</div>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Integrations</h3>
+				</div>
+				<div class="panel-body">
+					<ul role="menu" class="sidebar-menu">
+						<li role="presentation"><a role="menuitem" href="#" data-toggle="modal" data-target="#apiPython">Python API</a></li>
+					</ul>
 				</div>
 			</div>
 

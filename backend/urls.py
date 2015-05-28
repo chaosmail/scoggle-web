@@ -9,6 +9,9 @@ urlpatterns = [
     url(r'^auth/login/$', views.auth_login, name="api-auth-login"),
     url(r'^auth/logout/$', views.auth_logout, name="api-auth-logout"),
     url(r'^auth/signup/$', views.auth_signup, name="api-auth-signup"),
+    url(r'^auth/update-profile/$', views.auth_update_profile, name="api-auth-update-profile"),
+    url(r'^auth/create-token/$', views.auth_create_token, name="api-auth-create-token"),
+    url(r'^auth/remove-token/$', views.auth_remove_token, name="api-auth-remove-token"),
 
     # API Project Urls
     url(r'^project/(?P<project_id>[\w-]+)/$', ProjectDetail.as_view(), name='api-project-detail'),
