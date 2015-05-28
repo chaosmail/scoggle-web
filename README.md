@@ -1,13 +1,17 @@
 # Scoggle - the home of data scores
 
-## Heroku
+Scoggle is the home of your algorithm scores. Submit, analyze and visualize your performance!
+
+## Deploy to Heroku
 
 ### Getting Started
+
+Create a new project on heroku called `my-scoggle`
 
 Add a remote heroku endpoint to your local repository.
 
 ```
-heroku git:remote -a scoggle
+heroku git:remote -a my-scoggle
 ```
 
 Set the Django env vars to use production settings
