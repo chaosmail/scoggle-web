@@ -2,6 +2,28 @@
 
 Scoggle is the home of your algorithm scores. Submit, analyze and visualize your performance!
 
+## Run it locally
+
+### Getting Started
+
+Install the dependencies.
+
+```
+pip install -r requirements.txt
+```
+
+Migrate the database
+
+```
+python manage.py migrate
+```
+
+Run the development server
+
+```
+python manage.py runserver
+```
+
 ## Deploy to Heroku
 
 ### Getting Started
