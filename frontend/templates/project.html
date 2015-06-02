@@ -150,7 +150,9 @@
 				<p>You haven't submitted any scores yet. Please use the Python Integration or other available APIs to submit your scores!</p>
 				
 				<h3>Python Integration</h3>
-
+				<p>
+					<a href="{% url 'settings-keys' %}">Manager your API keys</a>
+		      	</p>
 				{% include 'partial/code-submit.html' %}
 			</div>
 
@@ -323,6 +325,9 @@ glyphicon glyphicon-new-window small"></span></a></li>
 			        <h4 class="modal-title">Python Integration</h4>
 			      </div>
 			      <div class="modal-body">
+			      	<p>
+						<a href="{% url 'settings-keys' %}">Manager your API keys</a>
+			      	</p>
 			        {% include 'partial/code-submit.html' %}
 			      </div>
 			      <div class="modal-footer">

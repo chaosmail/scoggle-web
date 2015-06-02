@@ -1,0 +1,8 @@
+<div hljs language="python">
+import scoggle
+
+# Configure Scoggle with your API key
+scoggle.key('{% if token %}{{ token.key }}{% else %}insert_api_key_here{% endif %}')
+# and the url of your scoggle installation
+scoggle.url('{% if host %}{{ host }}{% else %}insert_scoggle_url_here{% endif %}')
+</div>
