@@ -26,6 +26,8 @@ python manage.py runserver
 
 ## Deploy to Heroku
 
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
 ### Getting Started
 
 Create a new project on heroku called `my-scoggle`
