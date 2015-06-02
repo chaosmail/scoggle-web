@@ -1,0 +1,23 @@
+{
+  "name": "Scoggle",
+  "description": "Scoggle is the home of your algorithm scores. Submit, analyze and visualize your performance!",
+  "keywords": [
+    "scores",
+    "visualization"
+  ],
+  "website": "https://scoggle.herokuapp.com",
+  "repository": "https://github.com/chaosmail/scoggle-web",
+  "scripts": {
+    "postdeploy": "python manage.py migrate"
+  },
+  "env": {
+    "DJANGO_SETTINGS_MODULE": "scoggle.settings_production",
+    "DJANGO_SECRET_KEY": {
+      "description": "A secret key for verifying the integrity of signed cookies.",
+      "generator": "secret"
+    }
+  },
+  "addons": [
+    "heroku-postgresql:dev"
+  ]
+}
